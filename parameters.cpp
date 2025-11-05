@@ -1,0 +1,141 @@
+#include <ctype.h>
+
+#include "parameters.h"
+#include "main.h"
+
+string keywords[] = {
+    "center_x", "center_y",
+    "dx", "dy",
+    "iterations",
+    "zoom_factor",
+    "move_length",
+    "set_type",
+    "color_scheme",
+    "c_real", "c_imag",
+    "z0_real", "z0_imag"
+};
+int nkeywords = 13;
+
+void lowercase(char *s)
+{
+    for(int i = 0; s[i] != '\0'; i++)
+        s[i] = tolower(s[i]);
+}
+
+bool is_keyword(char *word)
+{
+    for(int i = 0; i < nkeywords; i++)
+        if(keywords[i] == word)
+            return TRUE;
+    return FALSE;
+}
+
+void load_parameters_from_file(string filename, parameters *p)
+{
+    char word[100];
+    FILE *file;
+
+    if((file = fopen(filename.c_str(), "r")) == NULL) {
+      fprintf(stderr, "error: can't open file '%s' for reading\n",
+              filename.c_str());
+      return;
+    }
+
+    int i;
+    char val[100];
+    while(fscanf(file, "%s", word) != -1) {
+        if(is_keyword(word))
+            fscanf(file, "%s", val);
+        else
+            fprintf(stderr, "parameter %s unknown\n", word);
+
+        if(!strcmp(word, "center_x"))
+            p->center_x = str2num(val);
+        else if(!strcmp(word, "center_y"))
+            p->center_y = str2num(val);
+        else if(!strcmp(word, "dx"))
+            p->dx = str2num(val);
+        else if(!strcmp(word, "dy"))
+            p->dy = str2num(val);
+        else if(!strcmp(word, "iterations"))
+            p->iterations = (int)str2num(val);
+        else if(!strcmp(word, "zoom_factor"))
+            p->zoom_factor = (int)str2num(val);
+        else if(!strcmp(word, "move_length"))
+            p->move_length = (int)str2num(val);
+        else if(!strcmp(word, "set_type")) {
+            lowercase(val);
+            if(!strcmp(val, "mandelbrot"))
+                p->set_type = MANDELBROT;
+            else if(!strcmp(val, "julia"))
+                p->set_type = JULIA;
+            else
+                fprintf(stderr, "%s is invalid for paremeter 'set_type'", val);
+        } else if(!strcmp(word, "color_scheme")) {
+            lowercase(val);
+            if (!strcmp(val, "dannis_favorite") || !strcmp(val, "rainbow") ||
+                !strcmp(val, "grayscale") || !strcmp(val, "bifurcating")) {
+              strcpy(p->color_scheme, val);
+            } else {
+              fprintf(stderr, "'%s' is invalid for parameter 'color_scheme'\n",
+                      val);
+            }
+        } else if(!strcmp(word, "c_real"))
+            p->c_real = str2num(val);
+        else if(!strcmp(word, "c_imag"))
+            p->c_imag = str2num(val);
+        else if(!strcmp(word, "z0_real"))
+            p->z0_real = str2num(val);
+        else if(!strcmp(word, "z0_imag"))
+            p->z0_imag = str2num(val);
+    }
+}
+
+void save_parameters_to_file(string filename, parameters *p)
+{
+    FILE *file;
+
+    if((file = fopen(filename.c_str(), "w")) == NULL) {
+      fprintf(stderr, "error: can't open file '%s' for writing",
+              filename.c_str());
+      return;
+    }
+
+    fprintf(file, "center_x %.30g\n", p->center_x);
+    fprintf(file, "center_y %.30g\n", p->center_y);
+    fprintf(file, "dx %.30g\n", p->dx);
+    fprintf(file, "dy %.30g\n", p->dy);
+
+    fprintf(file, "iterations %i\n", p->iterations);
+    fprintf(file, "zoom_factor %i\n", p->zoom_factor);
+    fprintf(file, "move_length %i\n", p->move_length);
+
+    fprintf(file, "set_type %s\n", (p->set_type == MANDELBROT) ? "mandelbrot"
+        : "julia");
+    fprintf(file, "color_scheme %s\n", p->color_scheme);
+
+    fprintf(file, "c_real %.30g\n", p->c_real);
+    fprintf(file, "c_imag %.30g\n", p->c_imag);
+    fprintf(file, "z0_real %.30g\n", p->z0_real);
+    fprintf(file, "z0_imag %.30g\n", p->z0_imag);
+}
+
+void copy_parameters(parameters *to, parameters from)
+{
+    to->center_x = from.center_x;
+    to->center_y = from.center_y;
+    to->dx = from.dx;
+    to->dy = from.dy;
+
+    to->iterations = from.iterations;
+    to->zoom_factor = from.zoom_factor;
+    to->move_length = from.move_length;
+
+    to->set_type = from.set_type;
+    strcpy(to->color_scheme, from.color_scheme);
+
+    to->c_real = from.c_real;
+    to->c_imag = from.c_imag;
+    to->z0_real = from.z0_real;
+    to->z0_imag = from.z0_imag;
+}
