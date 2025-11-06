@@ -13,8 +13,7 @@ HEADERS = main.h \
 		frame.h \
 		options.h \
 		complex.h \
-		parameters.h \
-		license.h
+		parameters.h
 
 SOURCES = main.cpp \
 		frame.cpp \
@@ -49,9 +48,9 @@ install:
 	$(INSTALL) $(TARGET) /usr/bin
 
 
-main.o: frame.h main.cpp main.h license.h
-frame.o: frame.h complex.h frame.cpp main.h license.h
-complex.o: complex.cpp complex.h license.h
-options.o: options.h main.h frame.h options.cpp license.h
-parameters.o: parameters.h main.h parameters.cpp license.h
+main.o: frame.h main.cpp main.h
+frame.o: frame.h complex.h frame.cpp main.h
+complex.o: complex.cpp complex.h
+options.o: options.h main.h frame.h options.cpp
+parameters.o: parameters.h main.h parameters.cpp
 

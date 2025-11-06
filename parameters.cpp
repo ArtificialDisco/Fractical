@@ -75,7 +75,7 @@ void load_parameters_from_file(string filename, parameters *p)
             lowercase(val);
             if (!strcmp(val, "dannis_favorite") || !strcmp(val, "rainbow") ||
                 !strcmp(val, "grayscale") || !strcmp(val, "bifurcating")) {
-              strcpy(p->color_scheme, val);
+              p->color_scheme = val;
             } else {
               fprintf(stderr, "'%s' is invalid for parameter 'color_scheme'\n",
                       val);
@@ -112,7 +112,7 @@ void save_parameters_to_file(string filename, parameters *p)
 
     fprintf(file, "set_type %s\n", (p->set_type == MANDELBROT) ? "mandelbrot"
         : "julia");
-    fprintf(file, "color_scheme %s\n", p->color_scheme);
+    fprintf(file, "color_scheme %s\n", p->color_scheme.c_str());
 
     fprintf(file, "c_real %.30g\n", p->c_real);
     fprintf(file, "c_imag %.30g\n", p->c_imag);
@@ -132,7 +132,7 @@ void copy_parameters(parameters *to, parameters from)
     to->move_length = from.move_length;
 
     to->set_type = from.set_type;
-    strcpy(to->color_scheme, from.color_scheme);
+    to->color_scheme = from.color_scheme;
 
     to->c_real = from.c_real;
     to->c_imag = from.c_imag;

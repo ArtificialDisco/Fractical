@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+using namespace std;
 
 enum { MANDELBROT, JULIA };
 typedef int fractal_type;
@@ -22,7 +23,7 @@ typedef struct {
 
     //enums:
     fractal_type set_type;
-    char color_scheme[100];
+    string color_scheme;
 
     //variables for the equation 
     //  "z[n+1]=z[n]^2+C"

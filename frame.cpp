@@ -20,7 +20,7 @@ Frame::Frame(const wxString &title, const wxPoint &pos, const wxSize &size)
     old_width = 0, old_height = 0;
     xpos = 0, ypos = 0;
 
-    strcpy(params.color_scheme, "dannis_favorite");
+    params.color_scheme = "dannis_favorite";
 
     params.iterations = atoi(DEFAULT_ITERATIONS);
     params.zoom_factor = atoi(DEFAULT_ZOOM_FACTOR);
@@ -190,7 +190,7 @@ void Frame::calc_colors()
     r = g = b = 0;
     for(int i = 0; i < 255; i++) {
 
-        if(!strcmp(params.color_scheme, "dannis_favorite")) {
+        if(params.color_scheme == "dannis_favorite") {
             if(i < 11) {
                 pens[i] = wxPen(wxColor(i * 15 + 100, 50, 40), 1, wxPENSTYLE_SOLID);
                 continue;
@@ -198,13 +198,13 @@ void Frame::calc_colors()
             r = g = b = i * 10;
             pens[i] = wxPen(wxColor(r + 120, g + 60, b - 20), 1, wxPENSTYLE_SOLID);
             
-        } else if(!strcmp(params.color_scheme, "rainbow")) {
+        } else if(params.color_scheme == "rainbow") {
             r = g = b = i * 15;
             pens[i] = wxPen(wxColor(r + 0, g + 50, b + 150), 1, wxPENSTYLE_SOLID);
         
-        } else if(!strcmp(params.color_scheme, "grayscale")) {
+        } else if(params.color_scheme == "grayscale") {
             pens[i] = wxPen(wxColor(i*10+50, i*10+50, i*10+50), 1, wxPENSTYLE_SOLID);
-        } else if(!strcmp(params.color_scheme, "bifurcating")) {
+        } else if(params.color_scheme == "bifurcating") {
             int rgb = i*i*i*i;
 
             r = (rgb >> 16) & 0xff;
@@ -225,12 +225,11 @@ void Frame::update_color_table()
 {
     calc_colors();
 
-    color_menu_danni->Check(
-        !strcmp(params.color_scheme, "dannis_favorite"));
-    color_menu_rainbow->Check(!strcmp(params.color_scheme, "rainbow"));
-    color_menu_grayscale->Check(!strcmp(params.color_scheme, "grayscale"));
-    color_menu_bifurcating->Check(!strcmp(params.color_scheme, "bifurcating"));
-    color_menu_testing->Check(!strcmp(params.color_scheme, "testing"));
+    color_menu_danni->Check(params.color_scheme == "dannis_favorite");
+    color_menu_rainbow->Check(params.color_scheme == "rainbow");
+    color_menu_grayscale->Check(params.color_scheme == "grayscale");
+    color_menu_bifurcating->Check(params.color_scheme == "bifurcating");
+    color_menu_testing->Check(params.color_scheme == "testing");
 }
 
 void Frame::update_buffer()
@@ -556,36 +555,36 @@ void Frame::OnSelectJulia(wxCommandEvent& event)
 //color schemes:
 void Frame::OnColorDanni(wxCommandEvent& event)
 {
-    if(strcmp(params.color_scheme, "dannis_favorite"))
-        strcpy(params.color_scheme, "dannis_favorite");
+    if(params.color_scheme != "dannis_favorite")
+        params.color_scheme = "dannis_favorite";
     update_color_table();
 }
 
 void Frame::OnColorRainbow(wxCommandEvent& event)
 {
-    if(strcmp(params.color_scheme, "rainbow"))
-        strcpy(params.color_scheme, "rainbow");
+    if(params.color_scheme != "rainbow")
+        params.color_scheme = "rainbow";
     update_color_table();
 }
 
 void Frame::OnColorGrayscale(wxCommandEvent& event)
 {
-    if(strcmp(params.color_scheme, "grayscale"))
-        strcpy(params.color_scheme, "grayscale");
+    if(params.color_scheme != "grayscale")
+        params.color_scheme = "grayscale";
     update_color_table();
 }
 
 void Frame::OnColorBifurcating(wxCommandEvent& event)
 {
-    if(strcmp(params.color_scheme, "bifurcating"))
-        strcpy(params.color_scheme, "bifurcating");
+    if(params.color_scheme != "bifurcating")
+        params.color_scheme = "bifurcating";
     update_color_table();
 }
 
 void Frame::OnColorTesting(wxCommandEvent& event)
 {
-    if(strcmp(params.color_scheme, "testing"))
-        strcpy(params.color_scheme, "testing");
+    if(params.color_scheme != "testing")
+        params.color_scheme = "testing";
     update_color_table();
 }
 
