@@ -1,32 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <string>
+using namespace std;
 
 #include "main.h"
 
-double str2num(const char *s)
-{
-	char str[100];
-	strcpy(str, s);
-
-	char dec_point;
-	char the_other_dec_point;
-
-	if(atof("0,5") == 0.5) {
-		dec_point = ',';
-		the_other_dec_point = '.';
-	} else {
-		dec_point = '.';
-		the_other_dec_point = ',';
-	}
-
-	for(int i = 0; s[i] != '\0'; i++)
-		if(str[i] == the_other_dec_point)
-			str[i] = dec_point;
-	return atof(str);
-}
-
-App a;
+App app;
 
 //IMPLEMENT_APP(App)
 
@@ -38,11 +18,11 @@ bool App::OnInit()
 	SetTopWindow(main_frame);
 
 #	ifdef __WINDOWS__
-	a.c_real = str2num(DEFAULT_C_REAL_VALUE);
-	a.c_imag = str2num(DEFAULT_C_IMAG_VALUE);
-	a.z0_real = str2num(DEFAULT_Z0_REAL_VALUE);
-	a.z0_imag = str2num(DEFAULT_Z0_IMAG_VALUE);
-	a.set_type = MANDELBROT;
+	app.c_real = std::stof(DEFAULT_C_REAL_VALUE);
+	app.c_imag = std::stof(DEFAULT_C_IMAG_VALUE);
+	app.z0_real = std::stof(DEFAULT_Z0_REAL_VALUE);
+	app.z0_imag = std::stof(DEFAULT_Z0_IMAG_VALUE);
+	app.set_type = MANDELBROT;
 #	endif
 	
 	main_frame->init_animation(c_real, c_imag, z0_real, z0_imag, set_type);
@@ -78,11 +58,11 @@ void get_complex(double *r, double *im, char *s)
 #ifndef __WINDOWS__
 int main(int argc, char *argv[])
 {
-	a.c_real = str2num(DEFAULT_C_REAL_VALUE);
-	a.c_imag = str2num(DEFAULT_C_IMAG_VALUE);
-	a.z0_real = str2num(DEFAULT_Z0_REAL_VALUE);
-	a.z0_imag = str2num(DEFAULT_Z0_IMAG_VALUE);
-	a.set_type = MANDELBROT;
+	app.c_real = std::stof(DEFAULT_C_REAL_VALUE);
+	app.c_imag = std::stof(DEFAULT_C_IMAG_VALUE);
+	app.z0_real = std::stof(DEFAULT_Z0_REAL_VALUE);
+	app.z0_imag = std::stof(DEFAULT_Z0_IMAG_VALUE);
+	app.set_type = MANDELBROT;
 	
 	int tmp;
 	char s[100];
@@ -94,9 +74,9 @@ int main(int argc, char *argv[])
 		
 		if(argv[tmp][1] == '=') {
 			if(argv[tmp][0] == 'c' || argv[tmp][0] == 'C')
-				get_complex(&a.c_real, &a.c_imag, s);
+				get_complex(&app.c_real, &app.c_imag, s);
 			else if(argv[tmp][0] == 'z' || argv[tmp][0] == 'Z')
-				get_complex(&a.z0_real, &a.z0_imag, s);
+				get_complex(&app.z0_real, &app.z0_imag, s);
 		} else if(argv[tmp][0] == '-') {
 
 			if(!strlen(s) && tmp < argc-1)
@@ -104,9 +84,9 @@ int main(int argc, char *argv[])
 		
 			if(argv[tmp][1] == 't')
 				if(!strcmp(s, "mandelbrot"))
-					a.set_type = MANDELBROT;
+					app.set_type = MANDELBROT;
 				else if(!strcmp(s, "julia"))
-					a.set_type = JULIA;
+					app.set_type = JULIA;
 				else
 					printf("-t must be followed by 'julia' or 'mandelbrot\n"
 						"setting type to mandelbrot\n\n");
@@ -118,6 +98,5 @@ int main(int argc, char *argv[])
 #endif //__WINDOWS__
 
 #ifdef __WINDOWS__
-//IMPLEMENT_APP(App)
 wxIMPLEMENT_APP(App);
 #endif //__WINDOWS__

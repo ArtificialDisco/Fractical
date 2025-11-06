@@ -109,14 +109,18 @@ OptionsWindow::OptionsWindow(Frame *parent, const wxString &title,
 	SetAcceleratorTable(accel);
 
 	Bind(wxEVT_CLOSE_WINDOW, &OptionsWindow::OnClose, this);
+
+    Bind(wxEVT_BUTTON, &OptionsWindow::OnOk, this, ID_Ok);
+    Bind(wxEVT_BUTTON, &OptionsWindow::OnCancel, this, ID_Cancel);
+    Bind(wxEVT_BUTTON, &OptionsWindow::OnReset, this, ID_Reset);
 }
 
-  void OptionsWindow::Close()
-  {
-	  parent->ClosePrefDialog();
-	  radio_box->Destroy();
-	  Destroy();
-  }
+void OptionsWindow::Close()
+{
+    parent->ClosePrefDialog();
+    radio_box->Destroy();
+    Destroy();
+}
 
 BEGIN_EVENT_TABLE(OptionsWindow, wxFrame)
 	/*EVT_CLOSE(OptionsWindow::OnClose)
@@ -155,7 +159,7 @@ void OptionsWindow::OnClose(wxCloseEvent& event)
 	//delete this;
 }
 
-void OptionsWindow::OnOk()
+void OptionsWindow::OnOk(wxCommandEvent& event )
 {
 	parent->params.iterations = iterations_spin->GetValue();
 	parent->params.zoom_factor = zoom_factor_spin->GetValue();
@@ -165,25 +169,25 @@ void OptionsWindow::OnOk()
 		? MANDELBROT : JULIA;
 	parent->params.set_type = set_type;
 
-	parent->params.center_x = str2num(center_x_text->GetValue().c_str());
-	parent->params.center_y = str2num(center_y_text->GetValue().c_str());
-	parent->params.dx = str2num(dx_text->GetValue().c_str());
-	parent->params.dy = str2num(dy_text->GetValue().c_str());
-	parent->params.c_real = str2num(c_real_text->GetValue().c_str());
-	parent->params.c_imag = str2num(c_imag_text->GetValue().c_str());
-	parent->params.z0_real = str2num(z0_real_text->GetValue().c_str());
-	parent->params.z0_imag = str2num(z0_imag_text->GetValue().c_str());
+	center_x_text->GetValue().ToDouble(&parent->params.center_x);
+	center_y_text->GetValue().ToDouble(&parent->params.center_y);
+	dx_text->GetValue().ToDouble(&parent->params.dx);
+	dy_text->GetValue().ToDouble(&parent->params.dy);
+	c_real_text->GetValue().ToDouble(&parent->params.c_real);
+	c_imag_text->GetValue().ToDouble(&parent->params.c_imag);
+	z0_real_text->GetValue().ToDouble(&parent->params.z0_real);
+	z0_imag_text->GetValue().ToDouble(&parent->params.z0_imag);
 	Close();
 
 	parent->Stop();
 }
 
-void OptionsWindow::OnCancel()
+void OptionsWindow::OnCancel(wxCommandEvent& event)
 {
 	Close();
 }
 
-void OptionsWindow::OnReset()
+void OptionsWindow::OnReset(wxCommandEvent& event)
 {
 	iterations_spin->SetValue(DEFAULT_ITERATIONS);
 	zoom_factor_spin->SetValue(DEFAULT_ZOOM_FACTOR);

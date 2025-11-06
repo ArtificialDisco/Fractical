@@ -29,6 +29,7 @@ class Frame : public wxFrame
 {
 public:
 	Frame(const wxString &title, const wxPoint &pos, const wxSize &size);
+    ~Frame();
 
 	wxPen pens[255];
 

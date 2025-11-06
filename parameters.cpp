@@ -1,4 +1,10 @@
 #include <ctype.h>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <cctype>
+using namespace std;
 
 #include "parameters.h"
 #include "main.h"
@@ -22,7 +28,7 @@ void lowercase(char *s)
         s[i] = tolower(s[i]);
 }
 
-bool is_keyword(char *word)
+bool is_keyword(string word)
 {
     for(int i = 0; i < nkeywords; i++)
         if(keywords[i] == word)
@@ -32,62 +38,63 @@ bool is_keyword(char *word)
 
 void load_parameters_from_file(string filename, parameters *p)
 {
-    char word[100];
-    FILE *file;
+    string keyword, value;
 
-    if((file = fopen(filename.c_str(), "r")) == NULL) {
-      fprintf(stderr, "error: can't open file '%s' for reading\n",
-              filename.c_str());
-      return;
-    }
-
-    int i;
-    char val[100];
-    while(fscanf(file, "%s", word) != -1) {
-        if(is_keyword(word))
-            fscanf(file, "%s", val);
-        else
-            fprintf(stderr, "parameter %s unknown\n", word);
-
-        if(!strcmp(word, "center_x"))
-            p->center_x = str2num(val);
-        else if(!strcmp(word, "center_y"))
-            p->center_y = str2num(val);
-        else if(!strcmp(word, "dx"))
-            p->dx = str2num(val);
-        else if(!strcmp(word, "dy"))
-            p->dy = str2num(val);
-        else if(!strcmp(word, "iterations"))
-            p->iterations = (int)str2num(val);
-        else if(!strcmp(word, "zoom_factor"))
-            p->zoom_factor = (int)str2num(val);
-        else if(!strcmp(word, "move_length"))
-            p->move_length = (int)str2num(val);
-        else if(!strcmp(word, "set_type")) {
-            lowercase(val);
-            if(!strcmp(val, "mandelbrot"))
-                p->set_type = MANDELBROT;
-            else if(!strcmp(val, "julia"))
-                p->set_type = JULIA;
-            else
-                fprintf(stderr, "%s is invalid for paremeter 'set_type'", val);
-        } else if(!strcmp(word, "color_scheme")) {
-            lowercase(val);
-            if (!strcmp(val, "dannis_favorite") || !strcmp(val, "rainbow") ||
-                !strcmp(val, "grayscale") || !strcmp(val, "bifurcating")) {
-              p->color_scheme = val;
+    ifstream file;
+    file.open(filename);
+    if (file.is_open()) {
+        cout << "OPEN!" << endl;
+        while (file >> keyword) {
+            if (is_keyword(keyword)) {
+                file >> value;
             } else {
-              fprintf(stderr, "'%s' is invalid for parameter 'color_scheme'\n",
-                      val);
+                cout << "Error: parameter " << keyword << " is unkown" << endl;
+                break;
             }
-        } else if(!strcmp(word, "c_real"))
-            p->c_real = str2num(val);
-        else if(!strcmp(word, "c_imag"))
-            p->c_imag = str2num(val);
-        else if(!strcmp(word, "z0_real"))
-            p->z0_real = str2num(val);
-        else if(!strcmp(word, "z0_imag"))
-            p->z0_imag = str2num(val);
+
+            if (keyword == "center_x") {
+                p->center_x = stof(value);
+            } else if (keyword == "center_y") {
+                p->center_y = stof(value);
+            } else if (keyword == "dx") {
+                p->dx = stof(value);
+            } else if (keyword == "dy") {
+                p->dy = stof(value);
+            } else if (keyword == "iterations") {
+                p->iterations = stof(value);
+            } else if (keyword == "zoom_factor") {
+                p->zoom_factor = stof(value);
+            } else if (keyword == "move_length") {
+                p->move_length = stof(value);
+            } else if (keyword == "c_real") {
+                p->c_real = stof(value);
+            } else if (keyword == "c_imag") {
+                p->c_imag = stof(value);
+            } else if (keyword == "z0_real") {
+                p->z0_real = stof(value);
+            } else if (keyword == "z0_imag") {
+                p->z0_imag = stof(value);
+            } else if (keyword == "set_type") {
+                std::transform(value.begin(), value.end(), value.begin(),
+                               [](unsigned char c) { return std::tolower(c); });
+                if (value == "mandelbrot") {
+                    p->set_type = MANDELBROT;
+                } else if (value == "julia") {
+                    p->set_type = JULIA;
+                } else {
+                    cout << value << " is invalid for parameter 'set_type'"
+                         << endl;
+                }
+            } else if (keyword == "color_scheme") {
+                if (value == "dannis_favorite" || value == "rainbow" ||
+                    value == "grayscale" || value == "bifurcating") {
+                    p->color_scheme = value;
+                } else {
+                    cout << value << " is invalid for parameter 'color_scheme'\n"
+                         << endl;
+                }
+            }
+        }
     }
 }
 

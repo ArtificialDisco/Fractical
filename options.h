@@ -37,9 +37,9 @@ public:
 
 	//signals
 	void OnClose(wxCloseEvent& event);
-	void OnOk();
-	void OnCancel();
-	void OnReset();
+	void OnOk(wxCommandEvent& event);
+	void OnCancel(wxCommandEvent& event);
+	void OnReset(wxCommandEvent& event);
 
 	enum {
 		ID_Ok,

@@ -9,8 +9,6 @@
 #include "parameters.h"
 #include "frame.h"
 
-double str2num(const char*);
-
 class App : public wxApp
 {
 	virtual bool OnInit();

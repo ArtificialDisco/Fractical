@@ -11,7 +11,7 @@
 #include "main.h"
 
 class App;
-extern App a;
+extern App app;
 
 Frame::Frame(const wxString &title, const wxPoint &pos, const wxSize &size)
   : wxFrame((wxFrame*)NULL, -1, title, pos, size)
@@ -59,10 +59,10 @@ Frame::Frame(const wxString &title, const wxPoint &pos, const wxSize &size)
     SetStatusText("Don't panic!");
     GetStatusBar()->SetFocus();
 
-    params.center_x = str2num(DEFAULT_MANDELBROT_CENTER_X);
-    params.center_y = str2num(DEFAULT_CENTER_Y);
-    params.dx = str2num(DEFAULT_DX);
-    params.dy = str2num(DEFAULT_DY);
+    params.center_x = stof(DEFAULT_MANDELBROT_CENTER_X);
+    params.center_y = stof(DEFAULT_CENTER_Y);
+    params.dx = stof(DEFAULT_DX);
+    params.dy = stof(DEFAULT_DY);
     
     calc_values();
     update_color_table();
@@ -106,6 +106,12 @@ Frame::Frame(const wxString &title, const wxPoint &pos, const wxSize &size)
     Bind(wxEVT_MENU, &Frame::OnMoveRight, this, ID_MoveRight);
     Bind(wxEVT_MENU, &Frame::OnMoveUp, this, ID_MoveUp);
     Bind(wxEVT_MENU, &Frame::OnMoveDown, this, ID_MoveDown);
+}
+
+Frame::~Frame()
+{
+    delete bitmap;
+    delete buffer;
 }
 
 void Frame::menu_setup()
@@ -301,8 +307,8 @@ void Frame::draw(wxDC *dc, bool restart)
 
             buffer->DrawPoint(xpos, ypos);
         }
-        while(a.Pending())
-            a.Dispatch();
+        while(app.Pending())
+            app.Dispatch();
 
         dc->Blit(0, ypos, width, 1, buffer, 0, ypos);
 
@@ -361,6 +367,8 @@ void Frame::OnSize(wxSizeEvent& event)
 
 void Frame::OnClose(wxCommandEvent& event)
 {
+    delete bitmap;
+    delete buffer;
     exit(0);
 }
 
@@ -371,7 +379,6 @@ void Frame::OnDraw(wxCommandEvent& event)
 
 void Frame::Draw()
 {
-    std::cout << "Draw" << std::endl;
     push_parameters(&params);
     
     if(running) {
