@@ -24,19 +24,19 @@ OptionsWindow::OptionsWindow(Frame *parent, const wxString &title,
 
 	//set_type = parent->set_type;
 	
-	sprintf(value, "%i", parent->params.iterations);
+	sprintf(value, "%i", parent->GetParams()->iterations);
 	label_width = display_text("Iterations: ", side_len, 20);
 	iterations_spin = new wxSpinCtrl(this, -1, value,
 		wxPoint(side_len+80, 18), wxSize(100, 27));
 	iterations_spin->SetRange(0, 10000);
 
-	sprintf(value, "%i", parent->params.zoom_factor);
+	sprintf(value, "%i", parent->GetParams()->zoom_factor);
 	label_width = display_text("Zoom factor: ", side_len, 52);
 	zoom_factor_spin = new wxSpinCtrl(this, -1, value,
 		wxPoint(side_len+80, 50), wxSize(100, 27));
 	zoom_factor_spin->SetRange(1, 20);
 
-	sprintf(value, "%i", parent->params.move_length);
+	sprintf(value, "%i", parent->GetParams()->move_length);
 	label_width = display_text("Move length: ", side_len, 84);
 	move_length_spin = new wxSpinCtrl(this, -1, value,
 		wxPoint(side_len+80, 82), wxSize(100, 27));
@@ -45,42 +45,42 @@ OptionsWindow::OptionsWindow(Frame *parent, const wxString &title,
 	display_text("Center:", side_len+200, 20);
 	display_text("X: ", side_len+273, 20);
 	center_x_text = entry_with_value(wxPoint(side_len+290, 16),
-		wxSize(100, 23), parent->params.center_x);
+		wxSize(100, 23), parent->GetParams()->center_x);
 	display_text("Y: ", side_len+400, 20);
 	center_y_text = entry_with_value(wxPoint(side_len+275+140, 16),
-		wxSize(100, 23), parent->params.center_y);
+		wxSize(100, 23), parent->GetParams()->center_y);
 
 	display_text("Scale factor:", side_len+200, 52);
 	display_text("X: ", side_len+273, 52);
 	dx_text = entry_with_value(wxPoint(side_len+290, 48), wxSize(100, 23),
-		parent->params.dx);
+		parent->GetParams()->dx);
 	display_text("Y: ", side_len+400, 52);
 	dy_text = entry_with_value(wxPoint(side_len+275+140, 48), wxSize(100, 23),
-		parent->params.dy);
+		parent->GetParams()->dy);
 
 	const wxString choices[] = { "Mandelbrot", "Julia" };
 	radio_box = new wxRadioBox(this, -1, "Set type",
 		wxPoint(side_len, 130), wxDefaultSize, 2, choices, 0,
 		wxRA_SPECIFY_ROWS);
-	radio_box->SetStringSelection((parent->params.set_type == MANDELBROT)
+	radio_box->SetStringSelection((parent->GetParams()->set_type == MANDELBROT)
 		? "Mandelbrot" : "Julia");
 
 	label_width = display_text("Only for the Julia set:", side_len+27, 190);
 	label_width = display_text("C = ", side_len, 215);
 	c_real_text = entry_with_value(wxPoint(side_len+label_width, 212),
-		wxSize(60, 23), parent->params.c_real, "%.6g");
+		wxSize(60, 23), parent->GetParams()->c_real, "%.6g");
 	display_text("+", side_len+label_width+65, 215);
 	c_imag_text = entry_with_value(wxPoint(side_len+label_width+75, 212),
-		wxSize(60, 23), parent->params.c_imag, "%.6g");
+		wxSize(60, 23), parent->GetParams()->c_imag, "%.6g");
 	label_width = display_text(" i", 30+label_width+137, 215);
 
 	label_width = display_text("Only for the Mandelbrot set:",side_len+25,250);
 	label_width = display_text("z0 = ", side_len-3, 275);
 	z0_real_text = entry_with_value(wxPoint(side_len+label_width-3, 272),
-		wxSize(60, 23), parent->params.z0_real, "%.6g");
+		wxSize(60, 23), parent->GetParams()->z0_real, "%.6g");
 	display_text("+", side_len+label_width+62, 275);
 	z0_imag_text = entry_with_value(wxPoint(side_len+label_width+72, 272),
-		wxSize(60, 23), parent->params.z0_imag, "%.6g");
+		wxSize(60, 23), parent->GetParams()->z0_imag, "%.6g");
 	label_width = display_text(" i", 30+label_width+134, 275);
 	
 	Fit();
@@ -161,22 +161,22 @@ void OptionsWindow::OnClose(wxCloseEvent& event)
 
 void OptionsWindow::OnOk(wxCommandEvent& event )
 {
-	parent->params.iterations = iterations_spin->GetValue();
-	parent->params.zoom_factor = zoom_factor_spin->GetValue();
-	parent->params.move_length = move_length_spin->GetValue();
+	parent->GetParams()->iterations = iterations_spin->GetValue();
+	parent->GetParams()->zoom_factor = zoom_factor_spin->GetValue();
+	parent->GetParams()->move_length = move_length_spin->GetValue();
 	
 	set_type = (radio_box->GetStringSelection() == "Mandelbrot")
 		? MANDELBROT : JULIA;
-	parent->params.set_type = set_type;
+	parent->GetParams()->set_type = set_type;
 
-	center_x_text->GetValue().ToDouble(&parent->params.center_x);
-	center_y_text->GetValue().ToDouble(&parent->params.center_y);
-	dx_text->GetValue().ToDouble(&parent->params.dx);
-	dy_text->GetValue().ToDouble(&parent->params.dy);
-	c_real_text->GetValue().ToDouble(&parent->params.c_real);
-	c_imag_text->GetValue().ToDouble(&parent->params.c_imag);
-	z0_real_text->GetValue().ToDouble(&parent->params.z0_real);
-	z0_imag_text->GetValue().ToDouble(&parent->params.z0_imag);
+	center_x_text->GetValue().ToDouble(&parent->GetParams()->center_x);
+	center_y_text->GetValue().ToDouble(&parent->GetParams()->center_y);
+	dx_text->GetValue().ToDouble(&parent->GetParams()->dx);
+	dy_text->GetValue().ToDouble(&parent->GetParams()->dy);
+	c_real_text->GetValue().ToDouble(&parent->GetParams()->c_real);
+	c_imag_text->GetValue().ToDouble(&parent->GetParams()->c_imag);
+	z0_real_text->GetValue().ToDouble(&parent->GetParams()->z0_real);
+	z0_imag_text->GetValue().ToDouble(&parent->GetParams()->z0_imag);
 	Close();
 
 	parent->Stop();

@@ -29,12 +29,12 @@ typedef struct {
     //  "z[n+1]=z[n]^2+C"
     double c_real, c_imag;
     double z0_real, z0_imag;
-} parameters;
+} Parameters;
 
 void lowercase(char*);
 bool is_keyword(char* word);
-void load_parameters_from_file(std::string, parameters*);
-void save_parameters_to_file(std::string, parameters*);
-void copy_parameters(parameters*, parameters);
+void load_parameters_from_file(std::string, Parameters*);
+void save_parameters_to_file(std::string, Parameters*);
+void copy_parameters(Parameters*, Parameters);
 
 #endif //PARAMETERS_H

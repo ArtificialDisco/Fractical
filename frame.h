@@ -28,10 +28,28 @@ using namespace std;
 class Frame : public wxFrame
 {
 public:
-	Frame(const wxString &title, const wxPoint &pos, const wxSize &size);
+    Frame(const wxString &title, const wxPoint &pos, const wxSize &size);
     ~Frame();
 
-	wxPen pens[255];
+    void InitAnimation(double, double, double, double, fractal_type);
+    void CalcValues();
+    void CalcColors();
+    void UpdateColorTable();
+    void UpdateBuffer();
+    void Repaint(int, int, int, int, wxClientDC* = NULL);
+    void PopParameters();
+    void PushParameters(Parameters*);
+
+    Parameters* GetParams() { return &params; }
+
+	void Draw(wxDC *dc, bool restart = false);
+    void ResetAndDraw();
+    void ZoomOut();
+    void Stop() { stop = true; }
+    void ClosePrefDialog() { pref_dialog_open = false; }
+
+private:
+    wxPen pens[255];
 
 	wxMenuItem *color_menu_danni;
 	wxMenuItem *color_menu_rainbow;
@@ -39,35 +57,7 @@ public:
 	wxMenuItem *color_menu_bifurcating;
 	wxMenuItem *color_menu_testing;
 
-	//variables:
-	int width, height;
-	int old_height, old_width;
-	int xpos, ypos;
-	int mouse_xpos, mouse_ypos;
-	double x_values[2000];
-	double y_values[2000];
-
-	parameters params;
-	vector<parameters> last_params;
-	int nparam;
-	int maxparam;
-
-	//general functions:
-	void menu_setup();
-	void draw(wxDC *dc, bool restart = false);
-	void init_animation(double, double, double, double, fractal_type);
-	void calc_values();
-	void calc_colors();
-	void update_color_table();
-	void update_buffer();
-	void repaint(int, int, int, int, wxClientDC* = NULL);
-	void pop_parameters();
-	void push_parameters(parameters*);
-
-    void Draw();
-    void ZoomOut();
-    void Stop() { stop = true; }
-    void ClosePrefDialog() { pref_dialog_open = false; }
+    void SetupMenu();
 
 	//signal functions:
 	void OnPaint(wxPaintEvent& event);
@@ -110,11 +100,22 @@ public:
 	void OnZoomIn(wxCommandEvent& event);
 	void OnZoomOut(wxCommandEvent& event);
 
-private:
+    int width, height;
+	int old_height, old_width;
+	int xpos, ypos;
+	int mouse_xpos, mouse_ypos;
+	double x_values[2000];
+	double y_values[2000];
+
     bool pref_dialog_open = false;
     bool running = false, stop = false;
     bool size_changed = false;
     bool left_mouse_down = false;
+
+    Parameters params;
+    vector<Parameters> last_params;
+    int nparam;
+    int maxparam;
 
     string image_filename = "";
     string image_last_dir = "";

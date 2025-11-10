@@ -39,7 +39,7 @@ Frame::Frame(const wxString &title, const wxPoint &pos, const wxSize &size)
     buffer->SetBackground(wxBrush(*black));
     buffer->Clear();
 
-    menu_setup();
+    SetupMenu();
 
     wxAcceleratorEntry entries[10];
     entries[0].Set(wxACCEL_NORMAL, WXK_NUMPAD_ADD, ID_ZoomIn);
@@ -64,8 +64,8 @@ Frame::Frame(const wxString &title, const wxPoint &pos, const wxSize &size)
     params.dx = stof(DEFAULT_DX);
     params.dy = stof(DEFAULT_DY);
     
-    calc_values();
-    update_color_table();
+    CalcValues();
+    UpdateColorTable();
 
     Bind(wxEVT_PAINT, &Frame::OnPaint, this, ID_Paint);
     Bind(wxEVT_MENU, &Frame::OnPaintCommand, this, ID_Paint);
@@ -114,7 +114,7 @@ Frame::~Frame()
     delete buffer;
 }
 
-void Frame::menu_setup()
+void Frame::SetupMenu()
 {
     wxMenuBar *menubar = new wxMenuBar;
     wxMenu *file = new wxMenu;
@@ -173,7 +173,7 @@ void Frame::menu_setup()
 }
 
 //process command line arguments
-void Frame::init_animation(double c_real, double c_imag, double z0_real,
+void Frame::InitAnimation(double c_real, double c_imag, double z0_real,
     double z0_imag, fractal_type set_type)
 {
     this->params.c_real = c_real, this->params.c_imag = c_imag;
@@ -181,7 +181,7 @@ void Frame::init_animation(double c_real, double c_imag, double z0_real,
     this->params.set_type = set_type;
 }
 
-void Frame::calc_values()
+void Frame::CalcValues()
 {
     for(int i = 0; i < width; i++)
         x_values[i] = params.center_x - params.dx * width / 2.0 + params.dx * i;
@@ -190,7 +190,7 @@ void Frame::calc_values()
         y_values[i] = params.center_y - params.dy * height / 2.0 + params.dy * i;
 }
 
-void Frame::calc_colors()
+void Frame::CalcColors()
 {
     int r, g, b;
     r = g = b = 0;
@@ -227,9 +227,9 @@ void Frame::calc_colors()
     }
 }
 
-void Frame::update_color_table()
+void Frame::UpdateColorTable()
 {
-    calc_colors();
+    CalcColors();
 
     color_menu_danni->Check(params.color_scheme == "dannis_favorite");
     color_menu_rainbow->Check(params.color_scheme == "rainbow");
@@ -238,7 +238,7 @@ void Frame::update_color_table()
     color_menu_testing->Check(params.color_scheme == "testing");
 }
 
-void Frame::update_buffer()
+void Frame::UpdateBuffer()
 {
     if(size_changed) {
         delete bitmap;
@@ -249,20 +249,20 @@ void Frame::update_buffer()
         buffer->SetBackground(wxBrush(*black));
     }
     
-    calc_values();
-    calc_colors();
+    CalcValues();
+    CalcColors();
     
     buffer->Clear();
 }
 
-void Frame::draw(wxDC *dc, bool restart)
+void Frame::Draw(wxDC *dc, bool restart)
 {
     double cr, ci;
 
     if(size_changed)
         GetClientSize(&width, &height);
 
-    update_buffer();
+    UpdateBuffer();
     dc->Clear();
         
     size_changed = FALSE;
@@ -312,18 +312,18 @@ void Frame::draw(wxDC *dc, bool restart)
 
         dc->Blit(0, ypos, width, 1, buffer, 0, ypos);
 
-        if(stop) { running = stop = FALSE; draw(dc); return; }
+        if(stop) { running = stop = FALSE; Draw(dc); return; }
     }
     running = FALSE;
 
-    char status_text[50];
-    sprintf(status_text, "time taken: %g seconds",
-        (float)(clock() - c) / 1000000.0f);
+    std::string status_text =
+        "Time taken: " + std::to_string((float)(clock() - c) / 1000000.0f) +
+        " seconds";
     SetStatusText(status_text);
 }
 
 //windows doesn't handle OnPaint, make an extra
-void Frame::repaint(int x1, int y1, int x2, int y2, wxClientDC *dc)
+void Frame::Repaint(int x1, int y1, int x2, int y2, wxClientDC *dc)
 {	
     bool create_dc = FALSE;
     if(dc == NULL) {
@@ -336,12 +336,12 @@ void Frame::repaint(int x1, int y1, int x2, int y2, wxClientDC *dc)
     if(create_dc) delete dc;
 }
 
-void Frame::pop_parameters()
+void Frame::PopParameters()
 {	
     copy_parameters(&params, last_params[(--nparam)-1]);
 }
 
-void Frame::push_parameters(parameters *p)
+void Frame::PushParameters(Parameters *p)
 {
     last_params.push_back(*p);
     //copy_parameters(&last_p[nparam++], *p);
@@ -374,12 +374,12 @@ void Frame::OnClose(wxCommandEvent& event)
 
 void Frame::OnDraw(wxCommandEvent& event)
 {
-    Draw();
+    ResetAndDraw();
 }
 
-void Frame::Draw()
+void Frame::ResetAndDraw()
 {
-    push_parameters(&params);
+    PushParameters(&params);
     
     if(running) {
         stop = TRUE;
@@ -388,8 +388,8 @@ void Frame::Draw()
     
     maxparam = nparam;
     
-    calc_values();
-    calc_colors();
+    CalcValues();
+    CalcColors();
     
     wxClientDC dc(this);
     const wxColour* black = wxBLACK;
@@ -397,7 +397,7 @@ void Frame::Draw()
     dc.Clear();
     dc.SetDeviceOrigin(0, 0);
     
-    draw(&dc);
+    Draw(&dc);
 }
 
 void Frame::OnSaveImageDialog(wxCommandEvent& event)
@@ -464,13 +464,13 @@ void Frame::OnLoadParameters(wxCommandEvent& event)
         param_last_dir = d.GetDirectory();
         load_parameters_from_file(param_filename, &params);
     }
-    update_color_table();
+    UpdateColorTable();
 }
 
 void Frame::OnUndo(wxCommandEvent& event)
 {
     if(nparam -1 > 0) {
-        pop_parameters();
+        PopParameters();
         if(running) {
             stop = TRUE;
             return;
@@ -480,8 +480,8 @@ void Frame::OnUndo(wxCommandEvent& event)
         dc.SetBackground(wxBrush(*black));
         dc.Clear();
         dc.SetDeviceOrigin(0, 0);
-        draw(&dc);
-        update_color_table();
+        Draw(&dc);
+        UpdateColorTable();
     }
 }
 
@@ -500,8 +500,8 @@ void Frame::OnRedo(wxCommandEvent& event)
         dc.SetBackground(wxBrush(*black));
         dc.Clear();
         dc.SetDeviceOrigin(0, 0);
-        draw(&dc);
-        update_color_table();
+        Draw(&dc);
+        UpdateColorTable();
     }
 }
 
@@ -547,7 +547,7 @@ void Frame::OnSelectMandelbrot(wxCommandEvent& event)
         params.set_type = MANDELBROT;
         params.center_x -= 0.4;
     }
-    Draw();
+    ResetAndDraw();
 }
 
 void Frame::OnSelectJulia(wxCommandEvent& event)
@@ -556,7 +556,7 @@ void Frame::OnSelectJulia(wxCommandEvent& event)
         params.set_type = JULIA;
         params.center_x += 0.4;
     }
-    Draw();
+    ResetAndDraw();
 }
 
 //color schemes:
@@ -564,35 +564,35 @@ void Frame::OnColorDanni(wxCommandEvent& event)
 {
     if(params.color_scheme != "dannis_favorite")
         params.color_scheme = "dannis_favorite";
-    update_color_table();
+    UpdateColorTable();
 }
 
 void Frame::OnColorRainbow(wxCommandEvent& event)
 {
     if(params.color_scheme != "rainbow")
         params.color_scheme = "rainbow";
-    update_color_table();
+    UpdateColorTable();
 }
 
 void Frame::OnColorGrayscale(wxCommandEvent& event)
 {
     if(params.color_scheme != "grayscale")
         params.color_scheme = "grayscale";
-    update_color_table();
+    UpdateColorTable();
 }
 
 void Frame::OnColorBifurcating(wxCommandEvent& event)
 {
     if(params.color_scheme != "bifurcating")
         params.color_scheme = "bifurcating";
-    update_color_table();
+    UpdateColorTable();
 }
 
 void Frame::OnColorTesting(wxCommandEvent& event)
 {
     if(params.color_scheme != "testing")
         params.color_scheme = "testing";
-    update_color_table();
+    UpdateColorTable();
 }
 
 void Frame::OnPrefDialog(wxCommandEvent& event)
@@ -660,7 +660,7 @@ void Frame::OnMouseLeftUp(wxMouseEvent &e)
 
     left_mouse_down = FALSE;
     buffer->Clear();
-    Draw();
+    ResetAndDraw();
 }
 
 void Frame::OnMouseMiddleDown(wxMouseEvent &e)
@@ -675,7 +675,7 @@ void Frame::OnMouseMiddleDown(wxMouseEvent &e)
         params.z0_imag = y_values[e.GetY()];
     }
     
-    Draw();
+    ResetAndDraw();
 }
 
 void Frame::OnMouseRight(wxMouseEvent &e)
@@ -693,7 +693,7 @@ void Frame::OnMouseMove(wxMouseEvent &e)
 
         static int x = e.GetX(), y = e.GetY();
 
-        repaint(0, 0, width, height, &dc);
+        Repaint(0, 0, width, height, &dc);
         
         x = e.GetX(), y = e.GetY();
     
@@ -709,18 +709,18 @@ void Frame::OnZoomIn(wxCommandEvent& event)
 {
     params.dx /= params.zoom_factor;
     params.dy /= params.zoom_factor;
-    calc_values();
+    CalcValues();
     buffer->Clear();
-    Draw();
+    ResetAndDraw();
 }
 
 void Frame::ZoomOut()
 {
     params.dx *= params.zoom_factor;
     params.dy *= params.zoom_factor;
-    calc_values();
+    CalcValues();
     buffer->Clear();
-    Draw();
+    ResetAndDraw();
 }
 
 void Frame::OnZoomOut(wxCommandEvent& event)
@@ -731,32 +731,32 @@ void Frame::OnZoomOut(wxCommandEvent& event)
 void Frame::OnMoveLeft(wxCommandEvent& event)
 {
     params.center_x -= params.move_length*params.dx;
-    calc_values();
+    CalcValues();
     buffer->Clear();
-    Draw();
+    ResetAndDraw();
 }
 
 void Frame::OnMoveRight(wxCommandEvent& event)
 {
     params.center_x += params.move_length*params.dx;
-    calc_values();
+    CalcValues();
     buffer->Clear();
-    Draw();
+    ResetAndDraw();
 }
 
 void Frame::OnMoveUp(wxCommandEvent& event)
 {
     params.center_y -= params.move_length*params.dy;
-    calc_values();
+    CalcValues();
     buffer->Clear();
-    Draw();
+    ResetAndDraw();
 }
 
 void Frame::OnMoveDown(wxCommandEvent& event)
 {
     params.center_y += params.move_length*params.dy;
-    calc_values();
+    CalcValues();
     buffer->Clear();
-    Draw();
+    ResetAndDraw();
 }
 

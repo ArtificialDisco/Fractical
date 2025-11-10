@@ -25,10 +25,10 @@ bool App::OnInit()
 	app.set_type = MANDELBROT;
 #	endif
 	
-	main_frame->init_animation(c_real, c_imag, z0_real, z0_imag, set_type);
+	main_frame->InitAnimation(c_real, c_imag, z0_real, z0_imag, set_type);
 	
-	load_parameters_from_file(".config", &main_frame->params);
-	main_frame->update_color_table();
+	load_parameters_from_file(".config", main_frame->GetParams());
+	main_frame->UpdateColorTable();
 	
 	return TRUE;
 }

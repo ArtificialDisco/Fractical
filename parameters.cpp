@@ -42,7 +42,7 @@ void make_lowercase(string& s)
                    [](unsigned char c) { return std::tolower(c); });
 }
 
-void load_parameters_from_file(string filename, parameters *p)
+void load_parameters_from_file(string filename, Parameters *p)
 {
     string keyword, value;
 
@@ -103,7 +103,7 @@ void load_parameters_from_file(string filename, parameters *p)
     }
 }
 
-void save_parameters_to_file(string filename, parameters *p)
+void save_parameters_to_file(string filename, Parameters *p)
 {
     ofstream file;
     file.open(filename);
@@ -131,7 +131,7 @@ void save_parameters_to_file(string filename, parameters *p)
     file << "z0_imag " << p->z0_imag << endl;
 }
 
-void copy_parameters(parameters *to, parameters from)
+void copy_parameters(Parameters *to, Parameters from)
 {
     to->center_x = from.center_x;
     to->center_y = from.center_y;
