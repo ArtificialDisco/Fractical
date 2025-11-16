@@ -46,7 +46,4 @@ public:
 		ID_Cancel,
 		ID_Reset
 	};
-
-private:
-	DECLARE_EVENT_TABLE()	
 };

@@ -17,26 +17,25 @@ OptionsWindow::OptionsWindow(Frame *parent, const wxString &title,
 
 	this->parent = parent;
 
-	char value[100];
-	int label_width, label_height;
+	string value;
+	int label_width;
 	int side_len = 30;
 	int button_len = 60;
 
 	//set_type = parent->set_type;
-	
-	sprintf(value, "%i", parent->GetParams()->iterations);
+	value = std::to_string(parent->GetParams()->iterations);
 	label_width = display_text("Iterations: ", side_len, 20);
 	iterations_spin = new wxSpinCtrl(this, -1, value,
 		wxPoint(side_len+80, 18), wxSize(100, 27));
 	iterations_spin->SetRange(0, 10000);
 
-	sprintf(value, "%i", parent->GetParams()->zoom_factor);
+	value = std::to_string(parent->GetParams()->zoom_factor);
 	label_width = display_text("Zoom factor: ", side_len, 52);
 	zoom_factor_spin = new wxSpinCtrl(this, -1, value,
 		wxPoint(side_len+80, 50), wxSize(100, 27));
 	zoom_factor_spin->SetRange(1, 20);
 
-	sprintf(value, "%i", parent->GetParams()->move_length);
+	value = std::to_string(parent->GetParams()->move_length);
 	label_width = display_text("Move length: ", side_len, 84);
 	move_length_spin = new wxSpinCtrl(this, -1, value,
 		wxPoint(side_len+80, 82), wxSize(100, 27));
@@ -122,15 +121,6 @@ void OptionsWindow::Close()
     Destroy();
 }
 
-BEGIN_EVENT_TABLE(OptionsWindow, wxFrame)
-	/*EVT_CLOSE(OptionsWindow::OnClose)
-	
-	EVT_BUTTON(ID_Ok, OptionsWindow::OnOk)
-	EVT_BUTTON(ID_Cancel, OptionsWindow::OnCancel)
-	EVT_BUTTON(ID_Reset, OptionsWindow::OnReset)
-	EVT_MENU(ID_Cancel, OptionsWindow::OnCancel)*/
-END_EVENT_TABLE()
-
 int OptionsWindow::display_text(string text, int x, int y) 
 {
 	wxStaticText *label = new wxStaticText(this, -1, text,
@@ -145,9 +135,10 @@ int OptionsWindow::display_text(string text, int x, int y)
 wxTextCtrl *OptionsWindow::entry_with_value(const wxPoint &pos, 
 	const wxSize &size, double val, string format)
 {
-	char strval[100];
-	sprintf(strval, format.c_str(), val);
+	/*char strval[100];
+	sprintf(strval, format.c_str(), val);*/
 
+	string strval = std::to_string(val);
 	wxTextCtrl *entry = new wxTextCtrl(this, -1, strval, pos, size);
 
 	return entry;

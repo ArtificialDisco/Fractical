@@ -32,7 +32,7 @@ typedef struct {
 } Parameters;
 
 void lowercase(char*);
-bool is_keyword(char* word);
+bool is_keyword(string word);
 void load_parameters_from_file(std::string, Parameters*);
 void save_parameters_to_file(std::string, Parameters*);
 void copy_parameters(Parameters*, Parameters);
